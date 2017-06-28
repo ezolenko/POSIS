@@ -3,8 +3,7 @@ type PosisPID = string | number;
 type PosisInterfaces = {
 	baseKernel: IPosisKernel;
 	spawn: IPosisSpawnExtension;
-	"coop.v1": IPosisCooperativeSchedulingV1;
-	"coop.v2": IPosisCooperativeSchedulingV2;
+	coop: IPosisCooperativeScheduling;
 }
 // Bundle for programs that are logically grouped
 interface IPosisBundle {
@@ -56,13 +55,7 @@ interface IPosisProcessRegistry {
 	// if your bundle consists of several programs you can pretend that we have a VFS: "ANI/MyBundle/BundledProgram1"
 	register(imageName: string, constructor: new (context: IPosisProcessContext) => IPosisProcess): boolean;
 }
-interface IPosisCooperativeSchedulingV1 {
-    // CPU used by process so far. Might include setup time kernel chooses to charge to the process.
-    readonly used: number;
-    // CPU budget scheduler allocated to this process. 
-    readonly budget: number;
-}
-interface IPosisCooperativeSchedulingV2 {
+interface IPosisCooperativeScheduling {
     // CPU used by process so far. Might include setup time kernel chooses to charge to the process.
     readonly used: number;
     // CPU budget scheduler allocated to this process. 
@@ -71,7 +64,8 @@ interface IPosisCooperativeSchedulingV2 {
     // Call will either return, indicating there is spare CPU, or callback will be called and yield will not return, ending execution for current tick.
     // Use callback to do last minute tasks like saving current state, etc.
     // The call will throw, so avoid catching generic exceptions around it.
-    yield(cb: () => void): void;
+    // If yield is not provided, fall back to `if (used >= budget) return;`
+    yield?(cb: () => void): void;
 }
 declare const enum EPosisSpawnStatus {
     ERROR = -1,

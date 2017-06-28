@@ -1,4 +1,4 @@
-interface IPosisCooperativeSchedulingV2 {
+interface IPosisCooperativeScheduling {
     // CPU used by process so far. Might include setup time kernel chooses to charge to the process.
     readonly used: number;
     // CPU budget scheduler allocated to this process. 
@@ -7,5 +7,6 @@ interface IPosisCooperativeSchedulingV2 {
     // Call will either return, indicating there is spare CPU, or callback will be called and yield will not return, ending execution for current tick.
     // Use callback to do last minute tasks like saving current state, etc.
     // The call will throw, so avoid catching generic exceptions around it.
-    yield(cb: () => void): void;
+    // If yield is not provided, fall back to `if (used >= budget) return;`
+    yield?(cb: () => void): void;
 }
