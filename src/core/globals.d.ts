@@ -1,7 +1,8 @@
 type PosisPID = string | number;
 
-type PosisInterfaces = {
+interface PosisInterfaces {
 	baseKernel: IPosisKernel;
 	spawn: IPosisSpawnExtension;
 	coop: IPosisCooperativeScheduling;
+	sleep: IPosisSleepExtension;
 }
