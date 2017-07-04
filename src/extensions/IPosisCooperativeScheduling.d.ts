@@ -3,10 +3,9 @@ interface IPosisCooperativeScheduling {
     readonly used: number;
     // CPU budget scheduler allocated to this process. 
     readonly budget: number;
-    // Process can call yield with a callback when it is ready to give up for the tick, but can continue if CPU is available. 
-    // Call will either return, indicating there is spare CPU, or callback will be called and yield will not return, ending execution for current tick.
-    // Use callback to do last minute tasks like saving current state, etc.
-    // The call will throw, so avoid catching generic exceptions around it.
-    // If yield is not provided, fall back to `if (used >= budget) return;`
-    yield?(cb: () => void): void;
+    // Process can call wrap its logic in a generator function passed to wrap() (see coop.bundle.ts for example)
+    // Process can yield a callback whith serialization or other wrapping up logic.
+    // Yield will either return, indicating there is spare CPU, or callback will be called and yield will not return, ending execution for current tick.
+    // See coop.bundle.ts for example of both generator and wrap implementation.
+    wrap?(makeIterator: () => IterableIterator<void | (() => void)>): void;
 }
